@@ -9,6 +9,7 @@ readme = "README.md"
 python = ">=3.10,<3.13"
 zetamarkets-py = "^0.2.41"
 hikari = "^2.0.0.dev122"
+python-dotenv = "^1.0.1"
 
 
 [build-system]

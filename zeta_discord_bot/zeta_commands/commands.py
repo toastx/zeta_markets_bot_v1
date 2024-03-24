@@ -1,5 +1,5 @@
 import os
-import utils
+import solathon
 from zetamarkets_py.client import Client
 from zetamarkets_py.types import Asset,OrderArgs, OrderOptions, Side
 
@@ -9,8 +9,8 @@ endpoint = os.getenv("ENDPOINT", "https://api.mainnet-beta.solana.com")
 class Commands:
     
     async def details(privkey):
-        print(type(privkey))
-        wallet = utils.Keypair.from_private_key(privkey)
+        
+        wallet = solathon.Keypair.from_private_key(privkey)
         asset = Asset.SOL
         client = await Client.load(endpoint=endpoint, wallet=wallet, assets=[asset])
         summary = await client.get_account_risk_summary()
@@ -20,14 +20,13 @@ class Commands:
     
     async def create_order(privkey):
         lst = []
-        wallet = utils.Keypair.from_private_key(privkey)
+        wallet = solathon.Keypair.from_private_key(privkey)
         asset = Asset.SOL
-        client = await Client.load(endpoint=endpoint, wallet=wallet, assets=[asset])
+        client = await Client.load(endpoint=endpoint, wallet=wallet.private_key, assets=[asset])
         side = Side.Bid
         order = OrderArgs(price=0.1, size=0.1, side=side)
         print(f"Placing {order.side} order: {order.size}x {str(asset)}-PERP @ ${order.price}")
         await client.place_orders_for_market(asset=asset, orders=[order])
-
         open_orders = await client.fetch_open_orders(Asset.SOL)
         for order in open_orders:
             lst.append(f"- {order.side.name} {order.info.size}x {str(asset)}-PERP @ ${order.info.price}")

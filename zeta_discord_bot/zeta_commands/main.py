@@ -4,7 +4,7 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 from commands import Commands
-
+import asyncio
 
 
 load_dotenv()
@@ -22,7 +22,7 @@ async def store(ctx: lightbulb.SlashContext) -> None:
 
 
 @bot.command
-@lightbulb.command("details", "details")
+@lightbulb.command("details", "details", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def details(ctx: lightbulb.SlashContext) -> None:
         account = Commands.retrieve(ctx.author.username)
@@ -40,15 +40,23 @@ async def details(ctx: lightbulb.SlashContext) -> None:
         )
         await ctx.respond(embed, flags=hikari.MessageFlag.EPHEMERAL)
 
-
 @bot.command
-@lightbulb.command("place","place order")
+@lightbulb.command("place","place order",auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def place_order(ctx: lightbulb.SlashContext) -> None:
         account = Commands.retrieve(ctx.author.username)
         order_details = await Commands.create_order(account)
+        
         await ctx.respond(order_details, flags=hikari.MessageFlag.EPHEMERAL)
 
+
+@bot.command
+@lightbulb.command("view","place order")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def view_order(ctx: lightbulb.SlashContext) -> None:
+        account = Commands.retrieve(ctx.author.username)
+        order_details = await Commands.view_order(account)
+        await ctx.respond(order_details, flags=hikari.MessageFlag.EPHEMERAL)
 
 
 

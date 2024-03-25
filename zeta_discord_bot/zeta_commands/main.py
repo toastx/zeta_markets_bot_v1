@@ -4,8 +4,6 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 from commands import Commands
-import asyncio
-
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
@@ -20,9 +18,8 @@ async def store(ctx: lightbulb.SlashContext) -> None:
         Commands.store(ctx.author.username,ctx.options.privatekey)
         await ctx.respond("wallet stored successfully", flags = hikari.MessageFlag.EPHEMERAL)
 
-
 @bot.command
-@lightbulb.command("details", "details", auto_defer=True)
+@lightbulb.command("details", "details", auto_defer=True, ephemeral = True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def details(ctx: lightbulb.SlashContext) -> None:
         account = Commands.retrieve(ctx.author.username)
@@ -40,8 +37,9 @@ async def details(ctx: lightbulb.SlashContext) -> None:
         )
         await ctx.respond(embed, flags=hikari.MessageFlag.EPHEMERAL)
 
+
 @bot.command
-@lightbulb.command("place","place order",auto_defer=True)
+@lightbulb.command("place","place order",auto_defer=True, ephemeral = True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def place_order(ctx: lightbulb.SlashContext) -> None:
         account = Commands.retrieve(ctx.author.username)
@@ -51,7 +49,7 @@ async def place_order(ctx: lightbulb.SlashContext) -> None:
 
 
 @bot.command
-@lightbulb.command("view","place order")
+@lightbulb.command("view","place order",auto_defer=True, ephemeral = True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def view_order(ctx: lightbulb.SlashContext) -> None:
         account = Commands.retrieve(ctx.author.username)

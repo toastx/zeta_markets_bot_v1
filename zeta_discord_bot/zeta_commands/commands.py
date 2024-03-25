@@ -1,9 +1,11 @@
 import os
 from zetamarkets_py.client import Client
-from zetamarkets_py.types import Asset,OrderArgs, OrderOptions, Side
+from zetamarkets_py.types import Asset,OrderArgs, Side
 from solders.keypair import Keypair
 import anchorpy
 from dotenv import load_dotenv
+from solana.rpc.core import TransactionExpiredBlockheightExceededError
+
 
 load_dotenv()
 
@@ -26,10 +28,19 @@ class Commands:
         client = await Client.load(endpoint=endpoint, wallet=wallet, assets=[asset])
         side = Side.Bid
         order = OrderArgs(price=0.1, size=0.1, side=side)
-        msg = f"Placing {order.side} order: {order.size}x {str(asset)}-PERP @ ${order.price}"
-        await client.place_orders_for_market(asset=asset, orders=[order])
-        return msg
+        try:
+            order_det = await client.place_orders_for_market(asset=asset, orders=[order])
+            print(order_det)
+            msg = f"Placing {order.side} order: {order.size}x {str(asset)}-PERP @ ${order.price}"
+            print(msg)
+            return msg
 
+        except TransactionExpiredBlockheightExceededError as e:
+            print(e)
+            return e
+
+            
+        
     async def view_order(privkey):
         string = ""
         wallet = anchorpy.Wallet(Keypair.from_base58_string(privkey))
@@ -37,7 +48,7 @@ class Commands:
         client = await Client.load(endpoint=endpoint, wallet=wallet, assets=[asset])
         open_orders = await client.fetch_open_orders(Asset.SOL)
         for order in open_orders:
-            string+=(f"- {order.side.name} {order.info.size}x {str(asset)}-PERP @ ${order.info.price}")
+            string+= f"- {order.side.name} {order.info.size} x {str(asset)}-PERP @ ${order.info.price}"
         return string
     
 
